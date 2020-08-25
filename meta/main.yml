@@ -2,6 +2,7 @@
 dependencies: []
 
 galaxy_info:
+  role_name: shadowsocks
   author: Raman Antanevich
   description: Deploy shadowsocks with v2ray-plugin
   company: none
