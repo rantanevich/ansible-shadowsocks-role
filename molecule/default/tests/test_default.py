@@ -7,7 +7,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def test_shadowsocks_setting_file_exists(host):
-    setting = host.file('/etc/shadowsocks/settings.json')
+    setting = host.file('/etc/shadowsocks/config.json')
 
     assert setting.exists
     assert setting.is_file

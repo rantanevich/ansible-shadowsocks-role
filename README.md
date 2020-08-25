@@ -1,7 +1,8 @@
 Ansible Role: Shadowsocks
 =========
+[![Build Status](https://travis-ci.org/rantanevich/ansible-shadowsocks-role.svg?branch=master)](https://travis-ci.org/rantanevich/ansible-shadowsocks-role)
 
-This ansible role installs shadowsocks-libev with v2ray-plugin.
+This ansible role installs Shadowsocks with v2ray-plugin.
 
 Requirements
 ------------

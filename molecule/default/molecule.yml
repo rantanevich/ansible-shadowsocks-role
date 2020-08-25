@@ -10,6 +10,7 @@ driver:
 platforms:
   - name: centos7
     image: geerlingguy/docker-centos7-ansible:latest
+    command: ""
     privileged: true
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro

@@ -59,6 +59,7 @@
   copy:
     src: "{{ shadowsocks_install_path }}/v2ray-plugin_linux_amd64"
     dest: "{{ shadowsocks_install_path }}/bin/v2ray-plugin"
+    mode: 0755
     remote_src: yes
   when: v2ray_binary.changed  # noqa 503
 
@@ -66,6 +67,7 @@
   file:
     path: /etc/shadowsocks
     state: directory
+    mode: 0755
 
 - name: add shadowsocks configuration file
   template:
