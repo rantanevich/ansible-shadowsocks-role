@@ -1,0 +1,94 @@
+---
+- name: add EPEL repo
+  yum: name=epel-release state=present
+
+- name: install development tools
+  yum: name={{ item }} state=present
+  loop: "{{ __development_tools }}"
+
+- name: download latest version of shadowsocks-libev
+  git:
+    repo: https://github.com/shadowsocks/shadowsocks-libev.git
+    dest: "{{ shadowsocks_install_path }}/shadowsocks-libev"
+    version: master
+
+- name: download submodules of shadowsocks-libev
+  command:  # noqa 303
+    cmd: git submodule update --init --recursive
+    chdir: "{{ shadowsocks_install_path }}/shadowsocks-libev"
+  register: submodule
+  changed_when: submodule.stdout != ""  # noqa 602
+
+- name: produce configure script for building
+  command:
+    cmd: ./autogen.sh
+    chdir: "{{ shadowsocks_install_path }}/shadowsocks-libev"
+    creates: m4/libtool.m4
+
+- name: pre-build configure
+  command:
+    cmd: ./configure --prefix={{ shadowsocks_install_path }}
+    chdir: "{{ shadowsocks_install_path }}/shadowsocks-libev"
+    creates: Makefile
+
+- name: build and install shadowsocks-libev
+  shell:
+    cmd: make && make install
+    chdir: "{{ shadowsocks_install_path }}/shadowsocks-libev"
+    creates: "{{ shadowsocks_install_path }}/bin/ss-server"
+
+- name: request the latest release of v2ray-plugin
+  uri:
+    url: https://api.github.com/repos/shadowsocks/v2ray-plugin/releases/latest
+    return_content: true
+  register: response
+
+- name: extract v2ray-plugin version from response
+  set_fact: v2ray_version={{ response.json.tag_name }}
+
+- name: download binary file of v2ray-plugin
+  unarchive:
+    src: "{{ __v2ray_url }}"
+    dest: "{{ shadowsocks_install_path }}"
+    mode: 0755
+    remote_src: yes
+    creates: "{{ shadowsocks_install_path }}/v2ray-plugin_linux_amd64"
+  register: v2ray_binary
+
+- name: copy v2ray-plugin to installation directory
+  copy:
+    src: "{{ shadowsocks_install_path }}/v2ray-plugin_linux_amd64"
+    dest: "{{ shadowsocks_install_path }}/bin/v2ray-plugin"
+    remote_src: yes
+  when: v2ray_binary.changed  # noqa 503
+
+- name: create directory for configuration file
+  file:
+    path: /etc/shadowsocks
+    state: directory
+
+- name: add shadowsocks configuration file
+  template:
+    src: config.json.j2
+    dest: /etc/shadowsocks/config.json
+    mode: 0600
+
+- name: add shadowsocks service file
+  template:
+    src: shadowsocks.service.j2
+    dest: /etc/systemd/system/shadowsocks.service
+    mode: 0755
+
+- name: create service user
+  user:
+    name: "{{ shadowsocks_service_user }}"
+    shell: /sbin/nologin
+    system: yes
+    create_home: no
+
+- name: start and enable service
+  systemd:
+    name: shadowsocks
+    state: started
+    enabled: yes
+    daemon_reload: yes

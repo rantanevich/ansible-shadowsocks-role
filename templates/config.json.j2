@@ -1,0 +1,14 @@
+{
+    "server": "0.0.0.0",
+    "server_port": {{ shadowsocks_server_port }},
+    "password": "{{ shadowsocks_password }}",
+    "timeout": {{ shadowsocks_timeout }},
+    "method": "{{ shadowsocks_method }}",
+    
+    "plugin": "{{ shadowsocks_install_dir }}/bin/v2ray-plugin",
+    "plugin_opts": "server",
+    "nameserver": "{{ shadowsocks_nameserver }}",
+    
+    "reuse_port": true,
+    "mode": "tcp_and_udp"
+}

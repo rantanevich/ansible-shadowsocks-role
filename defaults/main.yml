@@ -1,0 +1,11 @@
+---
+shadowsocks_install_path: /usr/local
+shadowsocks_temp_path: /tmp
+
+shadowsocks_server_port: 8388
+shadowsocks_password: "secret"
+shadowsocks_timeout: 300
+shadowsocks_method: "aes-256-ctr"
+shadowsocks_nameserver: "1.1.1.1"
+
+shadowsocks_service_user: shadowsocks

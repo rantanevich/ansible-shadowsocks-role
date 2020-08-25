@@ -1,0 +1,18 @@
+---
+sudo: required
+language: python
+python: "3.8"
+services: docker
+
+env:
+  matrix:
+    - image="centos7" tag="latest"
+
+before_install:
+  - sudo apt-get -qq update
+
+install:
+  - python3 -m pip install molecule yamllint ansible-lint docker testinfra flake8
+
+script:
+  - molecule test
